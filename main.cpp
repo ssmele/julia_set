@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// Setting up constants.
 const auto WIDTH_DIM = 4280;
 const auto HEIGHT_DIM = 4280;
 const auto CLR_CHANNELS = 3;
@@ -21,6 +22,9 @@ const auto C_IMG = 0.098;
 
 
 void print_img_array(int * img_array){
+    /*
+    Method used for printing array for debugging purposes.
+    */
     for (int y = 0; y<HEIGHT_DIM; y++){
         cout << '[';
         for(int x = 0; x<WIDTH_DIM; x++){
@@ -35,6 +39,10 @@ void print_img_array(int * img_array){
 
 
 void generate_img(int * img, char * file_name){
+    /*
+    Method used to unload the image to ppm file format.
+    */
+    
     // Save result to a PPM image
     ofstream file(file_name, std::ios::out | std::ios::binary);
     file << "P6\n" << WIDTH_DIM << " " << HEIGHT_DIM << "\n255\n";
@@ -51,6 +59,9 @@ void generate_img(int * img, char * file_name){
 }
 
 void N_TO_RGB(int * N, int * IMG){
+    /*
+    This method takes the divergance count array and converts it into an RGB color.
+    */
     for(int y = 0; y<HEIGHT_DIM; y++){
         for(int x = 0; x<WIDTH_DIM; x++){
             IMG[(y*HEIGHT_DIM)+x+0] = N[(y*HEIGHT_DIM)+x];
@@ -61,12 +72,18 @@ void N_TO_RGB(int * N, int * IMG){
 }
 
 void julia_set(int * N){
+    /*
+    Running the julia set convergance for each of the pixels.
+    */
     // For each pixel.
     for(int y = 0; y<HEIGHT_DIM; y++){
         for(int x = 0; x<WIDTH_DIM; x++){
+            // figure ou the actual placement on julia set geometry.
             float x_step = (X_LIM_HIGH - X_LIM_LOW)/(WIDTH_DIM-1);
             float y_step = (Y_LIM_HIGH - Y_LIM_LOW)/(HEIGHT_DIM-1);
             float zx = X_LIM_LOW + (x_step*x), zy = Y_LIM_LOW + (y_step*y);
+            
+            // Until we are succificently far away of breached the max_iter limit.
             int iter_count = 0;
             while ((zx*zx) + (zy*zy) < 4 && iter_count < MAX_ITER){
                 float tmp = (zx*zx) - (zy*zy) + C_REAL;
@@ -86,6 +103,7 @@ int main() {
     julia_set(N);
     //print_img_array(N);
 
+    // This section of code calculates the unique divergance count numbers throughout all values collected.
     map<int,int> unique_counter;
     for(int y = 0; y<HEIGHT_DIM; y++) {
         for (int x = 0; x < WIDTH_DIM; x++) {
